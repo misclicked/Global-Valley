@@ -96,7 +96,7 @@ namespace Global_Valley
         public Mat GetHistogram(Bitmap img, int threshold)
         {
             int[] hist = new int[256];
-            int width = 1000, height = img.Height;
+            int width = 800, height = 450;
             using (Mat mat = BitmapConverter.ToMat(img))
             {
                 for (int i = 0; i < mat.Height; i++)
