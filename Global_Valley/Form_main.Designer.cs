@@ -66,6 +66,7 @@
             // 
             // button_Convert
             // 
+            this.button_Convert.Enabled = false;
             this.button_Convert.Location = new System.Drawing.Point(425, 231);
             this.button_Convert.Name = "button_Convert";
             this.button_Convert.Size = new System.Drawing.Size(56, 23);

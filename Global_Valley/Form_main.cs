@@ -30,6 +30,7 @@ namespace Global_Valley
                 }
 
                 this.Text = open.FileName;
+                button_Convert.Enabled = true;
             }
         }
 
