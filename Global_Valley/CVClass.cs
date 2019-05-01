@@ -28,7 +28,7 @@ namespace Global_Valley
         {
             return u > 0 ? u : 0;
         }
-        public Image GlobalValley(Bitmap bmp, out int threshold)
+        public Image GlobalValley(Bitmap bmp, bool useF, bool usemedianBlur, out int threshold)
         {
             Image ret;
             int[] hist = new int[256];
@@ -36,13 +36,30 @@ namespace Global_Valley
             int[] R = new int[256];
             using (Mat mat = BitmapConverter.ToMat(bmp))
             {
-                for(int i = 0; i < mat.Height; i++)
+                if (usemedianBlur)
                 {
-                    for(int j = 0; j < mat.Width; j++)
+                    using (Mat newMat = mat.MedianBlur(3))
                     {
-                        hist[mat.Get<Vec3b>(i,j).Item0]++;
+                        for (int i = 0; i < newMat.Height; i++)
+                        {
+                            for (int j = 0; j < newMat.Width; j++)
+                            {
+                                hist[newMat.Get<Vec3b>(i, j).Item0]++;
+                            }
+                        }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i < mat.Height; i++)
+                    {
+                        for (int j = 0; j < mat.Width; j++)
+                        {
+                            hist[mat.Get<Vec3b>(i, j).Item0]++;
+                        }
+                    }
+                }
+                
                 for (int i = 1; i <= 255; i++)
                 {
                     if (hist[i] > L[i - 1])
@@ -70,7 +87,10 @@ namespace Global_Valley
                 threshold = 0;
                 for (int i = 1; i < 255; i++)
                 {
-                    Fi = s(L[i - 1] - hist[i]) * s(R[i + 1] - hist[i]);
+                    if(useF)
+                        Fi = s(L[i - 1] - hist[i]) + s(R[i + 1] - hist[i]);
+                    else
+                        Fi = s(L[i - 1] - hist[i]) * s(R[i + 1] - hist[i]);
                     if (Fi > max)
                     {
                         max = Fi;
@@ -86,18 +106,23 @@ namespace Global_Valley
             }
             return ret;
         }
-        public void ShowHistogram(Bitmap img, int threshold)
+        Window histoWindow;
+        public void ShowHistogram(Bitmap img, int threshold, bool useM)
         {
-            using (Window window = new Window("Histogram", GetHistogram(img, threshold)))
+            if(histoWindow == null)
             {
-                Cv2.WaitKey();
-            };
+                histoWindow = new Window("Histogram", GetHistogram(img, threshold, useM));
+            }
+            else
+            {
+                Cv2.ImShow("Histogram", GetHistogram(img, threshold, useM));
+            }
         } 
-        public Mat GetHistogram(Bitmap img, int threshold)
+        public Mat GetHistogram(Bitmap img, int threshold, bool useM)
         {
             int[] hist = new int[256];
             int width = 800, height = 450;
-            using (Mat mat = BitmapConverter.ToMat(img))
+            using (Mat mat = useM?BitmapConverter.ToMat(img).MedianBlur(3):BitmapConverter.ToMat(img))
             {
                 for (int i = 0; i < mat.Height; i++)
                 {

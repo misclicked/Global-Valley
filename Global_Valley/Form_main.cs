@@ -21,7 +21,7 @@ namespace Global_Valley
         private void button_imgSelect_Click(object sender, EventArgs e)
         {
             OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp";
+            open.Filter = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp; *.png)|*.jpg; *.jpeg; *.gif; *.bmp; *.png";
             if (open.ShowDialog() == DialogResult.OK)
             {
                 using (Bitmap bmp = new Bitmap(open.FileName))
@@ -52,8 +52,8 @@ namespace Global_Valley
         private void button_Convert_Click(object sender, EventArgs e)
         {
             int threshold = 0;
-            pictureBox_tran.Image = Cv.GlobalValley((Bitmap)pictureBox_org.Image, out threshold);
-            Cv.ShowHistogram((Bitmap)pictureBox_org.Image, threshold);
+            pictureBox_tran.Image = Cv.GlobalValley((Bitmap)pictureBox_org.Image, checkBox_F.Checked, checkBox_mB.Checked, out threshold);
+            Cv.ShowHistogram((Bitmap)pictureBox_org.Image, threshold, checkBox_mB.Checked);
         }
     }
 }
